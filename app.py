@@ -5,18 +5,17 @@ import pandas as pd
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
 
 app = Flask(__name__)
-if __name__ == '__main__':
-    app.run(debug=True)
-
 
 # Route for the home page
 @app.route('/')
 def index():
+    print("Accessed the home page")
     return render_template('home.html')
 
 # Route to handle form submissions and predictions
 @app.route('/predictdata', methods=['GET', 'POST'])
 def predict_datapoint():
+    print("Prediction route accessed with method:", request.method)
     if request.method == 'GET':
         return render_template('home.html')
     else:
@@ -31,15 +30,20 @@ def predict_datapoint():
             reading_score=float(request.form.get('reading_score'))
         )
         
+        print("Form Data:", data)
+        
         # Convert data to DataFrame
         pred_df = data.get_data_as_data_frame()
+        print("DataFrame for prediction:", pred_df)
         
         # Predict
         predict_pipeline = PredictPipeline()
         results = predict_pipeline.predict(pred_df)
         
+        print("Prediction Results:", results)
+        
         # Render the template with prediction results
         return render_template('home.html', results=results[0])
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
+    app.run(debug=True, host="0.0.0.0", port=8080)
